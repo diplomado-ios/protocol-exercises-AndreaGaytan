@@ -13,8 +13,16 @@ func printTable(_ dataSource: TabularDataSource & CustomStringConvertible) {
     var headerRow = "|"
     var columnWidths = [Int]()
 
+    for columnIndex in 0 ..< dataSource.numberOfColumns {
+            let columnLabel = dataSource.label(forColumn: columnIndex)
+            columnWidths.append(columnLabel.count)
+        }
+    
+    
     for columnIndex in 0..<dataSource.numberOfColumns {
         let columnLabel = dataSource.label(forColumn: columnIndex)
+        let paddingNeeded = columnWidths[columnIndex] - columnLabel.count
+        let padding = repeatElement(" ", count: paddingNeeded).joined()
         let columnHeader = " \(columnLabel) |"
         headerRow += columnHeader
         columnWidths.append(columnLabel.count)
@@ -29,7 +37,8 @@ func printTable(_ dataSource: TabularDataSource & CustomStringConvertible) {
         // Append each item in this row to the string
         for rowColumnIndex in 0..<dataSource.numberOfColumns {
             let item = dataSource.itemFor(row: rowIndex, column: rowColumnIndex)
-            let paddingNeeded = columnWidths[rowColumnIndex] - item.count
+            var paddingNeeded = columnWidths[rowColumnIndex] - item.count
+            if paddingNeeded < 0 { paddingNeeded = 0 }
             let padding = repeatElement(" ", count: paddingNeeded).joined(separator: "")
 
             output += " \(padding)\(item) |"
